@@ -2,6 +2,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 // Define the IUser interface
 export interface IUser extends Document {
+  clerkId: string;
   name: string;
   username: string;
   email: string;
@@ -16,6 +17,11 @@ export interface IUser extends Document {
 // Create the User schema
 const UserSchema: Schema = new Schema(
   {
+    clerkId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     name: {
       type: String,
       required: true,
@@ -30,7 +36,7 @@ const UserSchema: Schema = new Schema(
       required: true,
       unique: true,
       lowercase: true,
-      match: [/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/, 'Please fill a valid email address'], // simple email validation
+      match: [/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/, 'Please fill a valid email address'],
     },
     password: {
       type: String,

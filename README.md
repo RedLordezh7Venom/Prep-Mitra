@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PrepMitra
 
-## Getting Started
+### Step 1: Setting Up the Backend (Python)
 
-First, run the development server:
+The backend server is responsible for processing requests and running the machine learning model.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. Open your terminal and navigate to the backend/ folder:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+    bash
+    cd backend/
+    
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+2. Install the required Python dependencies (make sure you have a virtual environment set up):
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+    bash
+    pip install -r requirements.txt
+    
 
-## Learn More
+    If requirements.txt is not provided, you'll need to install the dependencies manually. Here’s an example of what you might need:
 
-To learn more about Next.js, take a look at the following resources:
+    bash
+    pip install flask flask-cors langchain langchain_huggingface langchain_chroma langchain_groq dotenv
+    
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. Run the backend Python server:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+    bash
+    python back.py
+    
 
-## Deploy on Vercel
+    The backend server should now be running and accessible at http://localhost:5000 (or any other port specified in your back.py file).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Step 2: Setting Up the Frontend (Next.js)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Now let's set up the frontend, which is built using Next.js.
+
+1. Open a new terminal window and navigate to the src/ folder:
+
+    bash
+    cd src/
+    
+
+2. Install the required dependencies using npm (or yarn):
+
+    bash
+    npm install
+    
+
+    If you're using yarn:
+
+    bash
+    yarn install
+    
+
+3. Start the Next.js development server:
+
+    bash
+    npm run dev
+    
+
+    This will start the Next.js app at http://localhost:3000. You can now open this URL in your browser and interact with the frontend.
+
+### Step 3: Interacting with the ML Model
+
+Once both the backend and frontend are running, the frontend will send requests to the backend Python server to interact with the machine learning model.
+
+- You can visit the Next.js app (running at http://localhost:3000) and submit queries. The backend will process these queries using the ML model and return the results.

@@ -4,12 +4,13 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 from langchain_groq import ChatGroq
 import logging
-
 import os
-from dotenv import load_dotenv  
+from dotenv import load_dotenv
+from flask_cors import CORS  # Importing CORS from flask_cors
 
 load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -50,6 +51,9 @@ def setup_qa_chain():
 
 # Initialize Flask app
 app = Flask(__name__)
+
+# Enable CORS for all routes
+CORS(app, supports_credentials=True)  # Ensure this is applied to all routes
 
 # Initialize the QA chain
 qa_chain = setup_qa_chain()

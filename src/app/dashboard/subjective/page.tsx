@@ -5,6 +5,8 @@ import NavBar2 from '@/components/NavBar2'
 import Sidebar from '@/components/Sidebar'
 import Footer from '@/components/Footer'
 import { Upload, Link as LinkIcon, FileText, Image, PenTool, MessageSquare, ThumbsUp, AlertCircle } from 'lucide-react'
+import axios from 'axios'
+import Markdown from 'react-markdown'
 
 type InputType = 'context' | 'topic' | 'link' | 'media' | 'pdf'
 
@@ -92,10 +94,15 @@ export default function SubjectivePage() {
     setAiDescriptiveResponse(descriptiveResponse);
   };
 
-  const handleAIReview = () => {
-    setShowFeedback(true);
-    generateAIResponse(); // Generate AI response when AI Review is clicked
-    console.log('Requesting AI review for:', inputText);
+  const handleAIReview = async () => {
+    try {
+      if(!inputText) throw new Error("Please provide a query");
+      axios.defaults.baseURL = 'http://127.0.0.1:5000'
+      const {data} = await axios.post('/query', { query: inputText })
+      setAiResponse(data.result)
+    } catch (error) {
+      console.error('Error requesting AI review:', error)
+    }
   };
 
   const handleEditResponse = () => {
@@ -235,7 +242,7 @@ export default function SubjectivePage() {
                 <div className="relative group">
                   <div className="absolute inset-0 bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-blue-500/10 rounded-xl blur transition-all duration-300 group-hover:opacity-100 opacity-0"></div>
                   <textarea
-                    className="relative w-full h-72 p-6 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-none text-gray-700 text-lg leading-relaxed transition-all duration-200 group-hover:shadow-lg"
+                    className="relative w-full h-44 p-6 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-none text-gray-700 text-lg leading-relaxed transition-all duration-200 group-hover:shadow-lg"
                     placeholder="Start writing your content here..."
                     value={inputText}
                     onChange={handleTextChange}
@@ -263,11 +270,16 @@ export default function SubjectivePage() {
                 <div className="mt-8 relative group">
                   <div className="absolute inset-0 bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-blue-500/10 rounded-xl blur transition-all duration-300 group-hover:opacity-100 opacity-0"></div>
                   <textarea
-                    className="relative w-full h-72 p-6 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-none text-gray-700 text-lg leading-relaxed transition-all duration-200 group-hover:shadow-lg"
+                    className="relative w-full h-96 p-6 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-none text-gray-700 text-lg leading-relaxed transition-all duration-200 group-hover:shadow-lg"
                     placeholder={aiResponse ? "" : "No AI response yet. Click 'AI Review' to generate feedback."}
                     value={aiResponse}
                     readOnly // Make the textarea read-only
                   />
+                  {/* <div
+                    className="relative w-full p-6 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-none text-gray-700 text-lg leading-relaxed transition-all duration-200 group-hover:shadow-lg"
+                  >
+                    <Markdown>{aiResponse}</Markdown>
+                  </div> */}
                   <div className="absolute bottom-4 right-4 flex items-center space-x-3 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg border shadow-lg">
                     <span className="text-sm text-gray-500">
                       AI Response
@@ -276,7 +288,7 @@ export default function SubjectivePage() {
                 </div>
 
                 {/* AI Descriptive Response Box */}
-                <div className="mt-8 relative group">
+                {/* <div className="mt-8 relative group">
                   <div className="absolute inset-0 bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-blue-500/10 rounded-xl blur transition-all duration-300 group-hover:opacity-100 opacity-0"></div>
                   <textarea
                     className="relative w-full h-72 p-6 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-none text-gray-700 text-lg leading-relaxed transition-all duration-200 group-hover:shadow-lg"
@@ -289,7 +301,7 @@ export default function SubjectivePage() {
                       Descriptive Analysis
                     </span>
                   </div>
-                </div>
+                </div> */}
 
                 {/* Bottom Controls with Enhanced Buttons */}
                 <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-100">
@@ -313,7 +325,7 @@ export default function SubjectivePage() {
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
-                        <span>AI Review</span>
+                        <button onClick={handleAIReview}>AI Review</button>
                       </span>
                     </button>
                     <button 

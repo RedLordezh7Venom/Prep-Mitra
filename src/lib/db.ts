@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import User, { IUser } from '@/models/User'
 
 const connectDB = async (): Promise<void> => {
   try {
@@ -20,4 +21,28 @@ const connectDB = async (): Promise<void> => {
   }
 };
 
-export default connectDB;
+// export default connectDB;
+
+
+
+
+export async function createUser(userData: Omit<IUser, '_id' | 'createdAt' | 'updatedAt'>) {
+  
+  connectDB();
+
+  const user = {
+    ...userData,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  }
+
+  const result = await User.create(user)
+  return result
+}
+
+export async function getUserByClerkId(clerkId: string) {
+  connectDB();
+
+  const user = await User.findOne({ clerkId })
+  return user
+}
