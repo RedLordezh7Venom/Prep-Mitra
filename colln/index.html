@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>P2P File Sharing</title>
+<style>
+body {
+  font-family: sans-serif;
+}
+#file-list {
+  list-style: none;
+  padding: 0;
+}
+#file-list li {
+  margin-bottom: 5px;
+}
+</style>
+</head>
+<body>
+
+<h1>P2P File Sharing</h1>
+
+<input type="file" id="file-input" multiple>
+<button id="share-button">Share Files</button>
+
+<h2>Shared Files:</h2>
+<ul id="file-list"></ul>
+
+<script type="module">
+import Hyperswarm from 'hyperswarm'
+import Hyperdrive from 'hyperdrive'
+import Localdrive from 'localdrive'
+import Corestore from 'corestore'
+import b4a from 'b4a'
+
+// Initialize Pear
+await Pear.ready()
+
+const store = new Corestore(Pear.config.storage)
+const swarm = new Hyperswarm()
+Pear.teardown(() => swarm.destroy())
+swarm.on('connection', conn => store.replicate(conn))
+
+const local = new Localdrive('./shared-files') // Temporary storage within the app's data directory
+const drive = new Hyperdrive(store)
+await drive.ready()
+
+const discovery = swarm.join(drive.discoveryKey)
+await discovery.flushed()
+
+console.log('Drive Key (Share this):', b4a.toString(drive.key, 'hex'))
+
+const fileInput = document.getElementById('file-input')
+const shareButton = document.getElementById('share-button')
+const fileList = document.getElementById('file-list')
+
+shareButton.addEventListener('click', async () => {
+  const files = fileInput.files
+
+  if (files.length === 0) {
+    alert('Please select files to share.')
+    return
+  }
+
+  for (const file of files) {
+      const fileBuffer = await file.arrayBuffer()
+      await local.put(file.name, b4a.from(fileBuffer)) // Store in LocalDrive first
+  }
+
+  const mirror = local.mirror(drive)
+  await mirror.done()
+  console.log('Files shared:', mirror.count)
+
+  updateFileList()
+    fileInput.value = ''; // Clear file input
+})
+
+async function updateFileList() {
+    fileList.innerHTML = ''; // Clear existing list
+    const entries = await drive.readdir('/')
+    entries.forEach(entry => {
+        const listItem = document.createElement('li');
+        listItem.textContent = entry.name;
+        fileList.appendChild(listItem);
+    });
+}
+
+
+// Mirroring logic (for receiving files)
+drive.core.on('append', async () => {
+  console.log('Remote drive updated. Mirroring...')
+  const mirror = drive.mirror(local)
+  await mirror.done()
+  console.log('Mirroring complete.')
+  updateFileList()
+})
+
+
+
+updateFileList() // Initial file list update
+
+// Sharing the drive key (replace with a more robust method in a real app)
+// For now, it's just logged to the console.  Users would need to copy/paste it.
+// In a real application, you'd use a signaling server or other method to share the key.
+console.log("To connect to this drive, share this key:", b4a.toString(drive.key, 'hex'))
+
+// Example of how to connect to a drive (in a separate part of the code or on another client):
+// const otherDriveKey = prompt("Enter the drive key to connect to:");
+// if (otherDriveKey) {
+//     const otherDrive = new Hyperdrive(store, b4a.from(otherDriveKey, 'hex'));
+//     await otherDrive.ready();
+//     swarm.join(otherDrive.discoveryKey, { client: true, server: false }); // Join as a client
+//     console.log("Connected to the remote drive.");
+// }
+
+
+</script>
+
+</body>
+</html>

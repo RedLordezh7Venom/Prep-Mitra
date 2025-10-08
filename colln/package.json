@@ -1,0 +1,38 @@
+{
+  "name": "colln",
+  "main": "index.html",
+  "pear": {
+    "name": "colln",
+    "type": "desktop",
+    "gui": {
+      "backgroundColor": "#1F2430",
+      "height": "540",
+      "width": "720"
+    }
+  },
+  "type": "module",
+  "license": "Apache-2.0",
+  "scripts": {
+    "dev": "pear run -d .",
+    "test": "brittle test/*.test.js"
+  },
+  "devDependencies": {
+    "brittle": "^3.0.0",
+    "pear-interface": "^1.0.0"
+  },
+  "dependencies": {
+    "b4a": "^1.6.7",
+    "bare-process": "^4.1.2",
+    "bare-readline": "^1.0.7",
+    "bare-tty": "^5.0.1",
+    "corestore": "^6.18.4",
+    "debounceify": "^1.1.0",
+    "express": "^4.21.2",
+    "hypercore": "^10.38.2",
+    "hypercore-crypto": "^3.5.0",
+    "hyperdrive": "^11.13.4",
+    "hyperswarm": "^4.8.4",
+    "localdrive": "^2.1.0",
+    "pear-stdio": "^1.0.1"
+  }
+}
